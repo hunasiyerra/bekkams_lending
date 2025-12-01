@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "423512662972",
+    "project_id": "thunderlordthor-3da81",
+    "storage_bucket": "thunderlordthor-3da81.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:423512662972:android:144cc46eb9f38717f381b9",
+        "android_client_info": {
+          "package_name": "com.example.bekkams_lending"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "423512662972-1gk7egf8l8j5gfakr3ju9p8r5bp8v30n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXcWwdl3Fu1BsjpgJW_sPW06QZ_PNOpdo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "423512662972-1gk7egf8l8j5gfakr3ju9p8r5bp8v30n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

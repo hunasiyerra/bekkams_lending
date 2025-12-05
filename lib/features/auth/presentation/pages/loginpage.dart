@@ -78,8 +78,10 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                         ontap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => AuthSignUpPage(),
+                            PageRouteBuilder(
+                              pageBuilder: (_, __, ___) => AuthSignUpPage(),
+                              transitionDuration: Duration.zero,
+                              reverseTransitionDuration: Duration.zero,
                             ),
                           );
                         },

@@ -13,7 +13,6 @@ class Firebaserepositoryimpl extends Firebaserepository {
     try {
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
-      print(userCredential.user);
       return left(userCredential.user);
     } on FirebaseException catch (e) {
       return right(e);

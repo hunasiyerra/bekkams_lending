@@ -4,17 +4,25 @@ class MyTextField extends StatelessWidget {
   final String hintText;
   final String? errortext;
   final TextEditingController textEditingController;
-  final void Function()? onChanged;
+  final void Function()? ontap;
   final Widget? suffixIcon;
+  final Widget? perfixIcon;
   final bool? obscureText;
+  final void Function(String)? onChanged;
+  final Color? errorColor;
+  final Color? errorTextColor;
   const MyTextField({
     super.key,
     required this.hintText,
     required this.textEditingController,
     required this.errortext,
-    this.onChanged,
+    this.ontap,
     this.suffixIcon,
     this.obscureText,
+    this.onChanged,
+    this.errorColor,
+    this.errorTextColor,
+    this.perfixIcon,
   });
 
   @override
@@ -28,7 +36,8 @@ class MyTextField extends StatelessWidget {
           cursorWidth: 1.25,
           style: TextStyle(color: Colors.white),
           controller: textEditingController,
-          onTap: onChanged,
+          onTap: ontap,
+          onChanged: onChanged,
           decoration: InputDecoration(
             filled: true,
             hintText: hintText,
@@ -47,9 +56,10 @@ class MyTextField extends StatelessWidget {
               ),
             ),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-
             suffixIcon: suffixIcon,
             suffixIconColor: Colors.white,
+            prefixIcon: perfixIcon,
+            prefixIconColor: Colors.green,
           ),
         ),
       ],

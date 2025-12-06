@@ -46,7 +46,7 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                     hintText: 'Password',
                     textEditingController: TextEditingController(),
                     obscureText: authenticationprovider.obscureTextlogin,
-                    onChanged: () {
+                    ontap: () {
                       authenticationprovider.clearPasswordError();
                     },
                     suffixIcon: IconButton(

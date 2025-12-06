@@ -1,6 +1,6 @@
 import 'package:bekkams_lending/features/auth/data/firebaserepository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 class Authenticationprovider extends ChangeNotifier {
   final Firebaserepository firebaserepository;
@@ -12,9 +12,18 @@ class Authenticationprovider extends ChangeNotifier {
     r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).+$',
   );
 
+  final email = TextEditingController();
+  final password = TextEditingController();
+  final firstName = TextEditingController();
+  final lastName = TextEditingController();
+  final phoneNumber = TextEditingController();
+  final confirmPasword = TextEditingController();
+
   String? _emailError;
   String? _passwordError;
+  String? _confirmPasswordError;
   bool _obscureText = true;
+  bool _obscurePasswordText = true;
   bool _obscureTextlogin = true;
   User? _user;
   bool _loading = false;
@@ -24,20 +33,23 @@ class Authenticationprovider extends ChangeNotifier {
   String? get passwordError => _passwordError;
   bool? get obscureText => _obscureText;
   bool? get obscureTextlogin => _obscureTextlogin;
+  bool? get obscurePasswordText => _obscurePasswordText;
   User? get userData => _user;
   bool? get loadingstate => _loading;
+  String? get confirmPasswordError => _confirmPasswordError;
   //String? get errorstate => _errorState;
 
-  Future<User?> signUpWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
-    _emailError = validateEmail(email);
-    _passwordError = validatePassword(password);
+  Future<User?> signUpWithEmailAndPassword() async {
+    String emailPassed = email.text.trim();
+    String passwordPassed = password.text.trim();
+    _emailError = validateEmail(emailPassed);
     if (_emailError == null || _passwordError == null) {
       _loading = true;
       notifyListeners();
-      final result = await firebaserepository.signUp(email, password);
+      final result = await firebaserepository.signUp(
+        emailPassed,
+        passwordPassed,
+      );
       final User? authuser = result.fold<User?>(
         (user) {
           _user = user;
@@ -70,6 +82,11 @@ class Authenticationprovider extends ChangeNotifier {
 
   void clearPasswordError() {
     _passwordError = null;
+    notifyListeners();
+  }
+
+  void checkPasswordError() {
+    _passwordError = validatePassword(password.text.trim());
     notifyListeners();
   }
 
@@ -112,7 +129,25 @@ class Authenticationprovider extends ChangeNotifier {
     } else {
       _obscureTextlogin = true;
     }
+    notifyListeners();
+  }
 
+  void showConfirmPassword() {
+    if (_obscurePasswordText == true) {
+      _obscurePasswordText = false;
+    } else {
+      _obscurePasswordText = true;
+    }
+    notifyListeners();
+  }
+
+  void checkConfirmPassword(String checkpassword) {
+    if (password.text.trim() != checkpassword.trim() ||
+        confirmPasword.text.trim() != checkpassword.trim()) {
+      _confirmPasswordError = "Please enter the same password";
+    } else if (password.text.trim() == checkpassword.trim()) {
+      _confirmPasswordError = null;
+    }
     notifyListeners();
   }
 }

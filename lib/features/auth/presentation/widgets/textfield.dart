@@ -11,6 +11,7 @@ class MyTextField extends StatelessWidget {
   final void Function(String)? onChanged;
   final Color? errorColor;
   final Color? errorTextColor;
+  final TextInputType? keyboardType;
   const MyTextField({
     super.key,
     required this.hintText,
@@ -23,6 +24,7 @@ class MyTextField extends StatelessWidget {
     this.errorColor,
     this.errorTextColor,
     this.perfixIcon,
+    this.keyboardType,
   });
 
   @override
@@ -34,6 +36,7 @@ class MyTextField extends StatelessWidget {
           obscureText: obscureText ?? true,
           cursorColor: Colors.white,
           cursorWidth: 1.25,
+          keyboardType: keyboardType,
           style: TextStyle(color: Colors.white),
           controller: textEditingController,
           onTap: ontap,

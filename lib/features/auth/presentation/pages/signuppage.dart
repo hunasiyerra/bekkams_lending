@@ -46,34 +46,35 @@ class _AuthSignUpPageState extends State<AuthSignUpPage> {
                         SizedBox(height: 50),
                         MyTextField(
                           obscureText: false,
-                          errortext: authenticationprovider.emaillError,
+                          errortext: authenticationprovider.firstNameError,
                           hintText: 'First Name',
                           textEditingController:
                               authenticationprovider.firstName,
                           ontap: () {
-                            authenticationprovider.clearEmailError();
+                            authenticationprovider.clearFirstNameError();
                           },
                         ),
                         SizedBox(height: 20),
                         MyTextField(
                           obscureText: false,
-                          errortext: authenticationprovider.emaillError,
+                          errortext: authenticationprovider.lastNameError,
                           hintText: 'Last Name',
                           textEditingController:
                               authenticationprovider.lastName,
                           ontap: () {
-                            authenticationprovider.clearEmailError();
+                            authenticationprovider.clearLastNameError();
                           },
                         ),
                         SizedBox(height: 20),
                         MyTextField(
                           obscureText: false,
-                          errortext: authenticationprovider.emaillError,
+                          keyboardType: TextInputType.phone,
+                          errortext: authenticationprovider.phoneNumberErrow,
                           hintText: 'Phone number',
                           textEditingController:
                               authenticationprovider.phoneNumber,
                           ontap: () {
-                            authenticationprovider.clearEmailError();
+                            authenticationprovider.clearPhoneNumError();
                           },
                         ),
                         SizedBox(height: 20),
@@ -158,7 +159,18 @@ class _AuthSignUpPageState extends State<AuthSignUpPage> {
                                 await authenticationprovider
                                     .signUpWithEmailAndPassword();
                             if (!mounted) return;
-                            print(user);
+                            if (user == null &&
+                                authenticationprovider.errorstate == true) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "Unable to register please try after sometime",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  backgroundColor: Colors.grey[800],
+                                ),
+                              );
+                            }
                             if (user != null) {
                               Navigator.push(
                                 context,
@@ -167,17 +179,6 @@ class _AuthSignUpPageState extends State<AuthSignUpPage> {
                                 ),
                               );
                             }
-                            // else {
-                            //   ScaffoldMessenger.of(context).showSnackBar(
-                            //     SnackBar(
-                            //       content: Text(
-                            //         authenticationprovider.errorstate!,
-                            //         style: TextStyle(color: Colors.white),
-                            //       ),
-                            //       backgroundColor: Colors.grey[800],
-                            //     ),
-                            //   );
-                            // }
                           },
                           buttonName: "Signup",
                         ),

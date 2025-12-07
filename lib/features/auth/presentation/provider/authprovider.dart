@@ -1,3 +1,4 @@
+import 'package:bekkams_lending/features/auth/data/domain/models/userdatamodel.dart';
 import 'package:bekkams_lending/features/auth/data/firebaserepository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
@@ -12,6 +13,7 @@ class Authenticationprovider extends ChangeNotifier {
     r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).+$',
   );
 
+  User? _user;
   final email = TextEditingController();
   final password = TextEditingController();
   final firstName = TextEditingController();
@@ -19,16 +21,22 @@ class Authenticationprovider extends ChangeNotifier {
   final phoneNumber = TextEditingController();
   final confirmPasword = TextEditingController();
 
+  //Error values
   String? _emailError;
   String? _passwordError;
   String? _confirmPasswordError;
+  String? _firstNameError;
+  String? _lastNameError;
+  String? _phoneNumberError;
+
+  // state and obscure values
   bool _obscureText = true;
   bool _obscurePasswordText = true;
   bool _obscureTextlogin = true;
-  User? _user;
   bool _loading = false;
-  //String? _errorState = "";
+  bool _errorState = false;
 
+  // getter values
   String? get emaillError => _emailError;
   String? get passwordError => _passwordError;
   bool? get obscureText => _obscureText;
@@ -37,13 +45,19 @@ class Authenticationprovider extends ChangeNotifier {
   User? get userData => _user;
   bool? get loadingstate => _loading;
   String? get confirmPasswordError => _confirmPasswordError;
-  //String? get errorstate => _errorState;
+  String? get firstNameError => _firstNameError;
+  String? get lastNameError => _lastNameError;
+  String? get phoneNumberErrow => _phoneNumberError;
+  bool? get errorstate => _errorState;
 
   Future<User?> signUpWithEmailAndPassword() async {
     String emailPassed = email.text.trim();
     String passwordPassed = password.text.trim();
     _emailError = validateEmail(emailPassed);
-    if (_emailError == null || _passwordError == null) {
+    _passwordError = validatePassword(passwordPassed);
+    String? errorFiled = validatefielddata();
+    if (_emailError == null && _passwordError == null && errorFiled == null) {
+      print("this is a true menthod");
       _loading = true;
       notifyListeners();
       final result = await firebaserepository.signUp(
@@ -53,22 +67,41 @@ class Authenticationprovider extends ChangeNotifier {
       final User? authuser = result.fold<User?>(
         (user) {
           _user = user;
-          _loading = false;
           return _user;
         },
         (failure) {
           if (failure.code == "email-already-in-use") {
             _emailError = failure.message;
           }
-          // else {
-          //   _errorState = failure.message;
-          // }
           _loading = false;
           notifyListeners();
           return null;
         },
       );
-      return authuser;
+      if (authuser != null) {
+        final result = await firebaserepository.saveUserdata(
+          Userdatamodel(
+            uId: _user!.uid.trim(),
+            firstName: firstName.text.trim(),
+            lastName: lastName.text.trim(),
+            email: email.text.trim(),
+            phoneNumber: int.parse(phoneNumber.text.trim()),
+            role: "admin",
+          ),
+        );
+        final data = result.fold((value) => value, (failure) => null);
+        if (data != null) {
+          _loading = false;
+          notifyListeners();
+          return authuser;
+        } else {
+          _errorState = true;
+          _loading = false;
+          notifyListeners();
+          _user!.delete();
+          return null;
+        }
+      }
     }
     notifyListeners();
     return null;
@@ -85,12 +118,27 @@ class Authenticationprovider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearFirstNameError() {
+    _firstNameError = null;
+    notifyListeners();
+  }
+
+  void clearLastNameError() {
+    _lastNameError = null;
+    notifyListeners();
+  }
+
+  void clearPhoneNumError() {
+    _phoneNumberError = null;
+    notifyListeners();
+  }
+
   void checkPasswordError() {
     _passwordError = validatePassword(password.text.trim());
     notifyListeners();
   }
 
-  // used to validate the Email and password
+  // used to validate the Email, password and field values.
   String? validateEmail([String? email]) {
     if (email == null || email.isEmpty) {
       return "Please enter Email ID";
@@ -110,6 +158,28 @@ class Authenticationprovider extends ChangeNotifier {
       return "Include uppercase, lowercase, number & special character";
     }
     return null;
+  }
+
+  String? validatefielddata() {
+    if (firstName.text.trim().isEmpty) {
+      _firstNameError = "Please enter firstName";
+    }
+    if (lastName.text.trim().isEmpty) {
+      _lastNameError = "Please enter lastName";
+    }
+    if (phoneNumber.text.trim().isEmpty) {
+      _phoneNumberError = "Please enter PhoneNumber";
+      return _phoneNumberError;
+    } else if (phoneNumber.text.trim().length != 10) {
+      _phoneNumberError = "Phone Number should be 10 digits";
+    }
+    if (_firstNameError != null ||
+        _lastNameError != null ||
+        _phoneNumberError != null) {
+      return "errorfields";
+    } else {
+      return null;
+    }
   }
 
   // Password show and hide

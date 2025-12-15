@@ -1,5 +1,6 @@
 import 'package:bekkams_lending/corecomponents/mediaquery.dart';
 import 'package:bekkams_lending/features/auth/presentation/pages/homepage.dart';
+import 'package:bekkams_lending/features/auth/presentation/pages/imagespage.dart';
 import 'package:bekkams_lending/features/auth/presentation/provider/authprovider.dart';
 import 'package:bekkams_lending/features/auth/presentation/widgets/filledbutton.dart';
 import 'package:bekkams_lending/features/auth/presentation/widgets/textfield.dart';
@@ -175,7 +176,7 @@ class _AuthSignUpPageState extends State<AuthSignUpPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MyHomePage(),
+                                  builder: (context) => ImageUploadScreen(),
                                 ),
                               );
                             }

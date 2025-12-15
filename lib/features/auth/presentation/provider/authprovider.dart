@@ -87,6 +87,7 @@ class Authenticationprovider extends ChangeNotifier {
             email: email.text.trim(),
             phoneNumber: int.parse(phoneNumber.text.trim()),
             role: "admin",
+            createdAt: DateTime.now(),
           ),
         );
         final data = result.fold((value) => value, (failure) => null);

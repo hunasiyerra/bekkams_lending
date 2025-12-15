@@ -1,4 +1,6 @@
 import 'package:bekkams_lending/features/auth/data/domain/entities/userdata.dart';
+import 'package:bekkams_lending/features/auth/data/domain/models/userimagemodel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Userdatamodel extends Userdata {
   Userdatamodel({
@@ -19,10 +21,13 @@ class Userdatamodel extends Userdata {
       firstName: json['firstName'],
       lastName: json['lastName'],
       email: json['email'],
-      phoneNumber: json['phoneNumber'],
+      phoneNumber: (json['phoneNumber'] as num?)?.toInt(),
       role: json['role'],
-      userimagedata: json['images'] ?? '',
-      createdAt: json['createdAt'],
+      userimagedata:
+          (json['images'] as List<dynamic>?)
+              ?.map((e) => Userimagemodel.fromJson(e))
+              .toList(),
+      createdAt: (json['createdAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -34,8 +39,8 @@ class Userdatamodel extends Userdata {
       'email': email ?? "",
       'phoneNumber': phoneNumber ?? "",
       'role': role ?? "",
-      'images': userimagedata ?? [],
-      'createdAt': createdAt ?? DateTime.now(),
+      'images': userimagedata?.map((e) => (e as Userimagemodel).toJson()) ?? [],
+      'createdAt': createdAt ?? "",
       'updatedAt': updatedAt ?? DateTime.now(),
     };
   }

@@ -57,7 +57,6 @@ class Authenticationprovider extends ChangeNotifier {
     _passwordError = validatePassword(passwordPassed);
     String? errorFiled = validatefielddata();
     if (_emailError == null && _passwordError == null && errorFiled == null) {
-      print("this is a true menthod");
       _loading = true;
       notifyListeners();
       final result = await firebaserepository.signUp(

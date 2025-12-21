@@ -14,10 +14,6 @@ class Firebaserepositoryimpl extends Firebaserepository {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  Firebaserepositoryimpl() {
-    print("repository object created");
-  }
-
   @override
   Future<Either<User?, FirebaseException>> signUp(
     String email,
@@ -60,7 +56,8 @@ class Firebaserepositoryimpl extends Firebaserepository {
           .ref()
           .child("Image")
           .child(uid)
-          .child(folder);
+          .child(folder)
+          .child("${DateTime.now().millisecondsSinceEpoch}.jpg");
       final UploadTask uploadTask = ref.putFile(file);
 
       // Wait for upload to complete

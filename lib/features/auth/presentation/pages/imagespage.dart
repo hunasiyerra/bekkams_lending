@@ -1,30 +1,21 @@
-import 'package:bekkams_lending/features/auth/presentation/provider/authprovider.dart';
+import 'package:bekkams_lending/corecomponents/enums/imageenums.dart';
+import 'package:bekkams_lending/features/auth/presentation/pages/homepage.dart';
 import 'package:bekkams_lending/features/auth/presentation/provider/imageprovider.dart';
 import 'package:bekkams_lending/features/auth/presentation/widgets/errortext.dart';
 import 'package:bekkams_lending/features/auth/presentation/widgets/filledbutton.dart';
-//import 'package:bekkams_lending/features/auth/presentation/widgets/textfield.dart';
 import 'package:bekkams_lending/features/auth/presentation/widgets/uploadbutton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:provider/provider.dart';
 
 class ImageUploadScreen extends StatefulWidget {
-  const ImageUploadScreen({super.key});
+  final String uId;
+  const ImageUploadScreen({super.key, required this.uId});
 
   @override
   State<ImageUploadScreen> createState() => _ImageUploadScreenState();
 }
 
 class _ImageUploadScreenState extends State<ImageUploadScreen> {
-  // late Imageprovider imageprovider;
-
-  @override
-  void initState() {
-    super.initState();
-    // imageprovider = Imageprovider();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<CustomImageProvider>(
@@ -45,7 +36,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                           backgroundImage:
                               imageprovide.getProfileUrl.isNotEmpty &&
                                       imageprovide.getimageDisplayed ==
-                                          "Success"
+                                          ImageStatus.success
                                   ? NetworkImage(imageprovide.getProfileUrl)
                                   : AssetImage(
                                     'assets/images/placeholderimage.png',
@@ -53,7 +44,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                           child:
                               imageprovide.getProfileUrl.isEmpty &&
                                       imageprovide.getimageDisplayed ==
-                                          "Loading"
+                                          ImageStatus.loading
                                   ? CircularProgressIndicator(
                                     color: Colors.white,
                                   )
@@ -67,12 +58,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                             radius: 15,
                             child: IconButton(
                               onPressed: () {
-                                String user =
-                                    context
-                                        .read<Authenticationprovider>()
-                                        .userData!
-                                        .uid;
-                                imageprovide.uploadImageFromCamera(user);
+                                imageprovide.uploadImageFromCamera(widget.uId);
                               },
                               icon: Icon(
                                 Icons.camera_alt,
@@ -84,45 +70,92 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                         ),
                       ],
                     ),
-                    ErrorText(error: imageprovide.getProfileError),
+                    ErrorText(
+                      color: Colors.red,
+                      error: imageprovide.errorFor(ImagefolderType.profile),
+                    ),
                     SizedBox(height: 30),
                     FileUploadButton(
                       buttonName: "Aadhar :",
                       onPressed: () async {
-                        //  print("Button Pressed aadhar");
-                        //  await imageprovider.imageFromGallery();
-                        //  print("image printed");
-                        String user =
-                            context
-                                .read<Authenticationprovider>()
-                                .userData!
-                                .uid;
-                        await imageprovide.imageFromGallery(user);
+                        await imageprovide.imageFromGallery(
+                          widget.uId,
+                          ImagefolderType.aadhar,
+                        );
                       },
                     ),
-                    ErrorText(error: imageprovide.getAadharError),
+                    ErrorText(
+                      color:
+                          imageprovide.getAadharNumber != null
+                              ? Colors.green
+                              : Colors.red,
+                      fontSize:
+                          imageprovide.getAadharNumber != null ? 18 : null,
+                      fontWeight:
+                          imageprovide.getAadharNumber != null
+                              ? FontWeight.bold
+                              : null,
+                      error:
+                          imageprovide.getAadharNumber ??
+                          imageprovide.errorFor(ImagefolderType.aadhar),
+                    ),
                     SizedBox(height: 30),
                     FileUploadButton(
                       buttonName: "Pan :",
                       onPressed: () async {
-                        String user =
-                            context
-                                .read<Authenticationprovider>()
-                                .userData!
-                                .uid;
-                        await imageprovide.imageFromGallery(user);
+                        await imageprovide.imageFromGallery(
+                          widget.uId,
+                          ImagefolderType.pan,
+                        );
                       },
                     ),
-                    ErrorText(error: imageprovide.getPanError),
-                    SizedBox(height: 150),
+                    ErrorText(
+                      color:
+                          imageprovide.getPanNumber != null
+                              ? Colors.green
+                              : Colors.red,
+                      fontSize: imageprovide.getPanNumber != null ? 18 : null,
+                      fontWeight:
+                          imageprovide.getPanNumber != null
+                              ? FontWeight.bold
+                              : null,
+                      error:
+                          imageprovide.getPanNumber ??
+                          imageprovide.errorFor(ImagefolderType.pan),
+                    ),
+                    SizedBox(height: 50),
+                    ErrorText(
+                      color: Colors.red,
+                      error: imageprovide.errorFor(ImagefolderType.none),
+                    ),
+                    SizedBox(height: 70),
                     CustomFilledButton(
                       onPressed: () async {
-                        String user =
-                            context
-                                .read<Authenticationprovider>()
-                                .userData!
-                                .uid;
-                        await imageprovide.saveImageData(user);
+                        final result = await imageprovide.saveImageData(
+                          widget.uId,
+                        );
+                        if (result != null && result.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (_, __, ___) => MyHomePage(),
+                              transitionDuration: Duration.zero,
+                              reverseTransitionDuration: Duration.zero,
+                            ),
+                          );
+                        }
+                        if (imageprovide.getImageFolder ==
+                            ImagefolderType.none) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "Unable to Save please try after sometime",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor: Colors.grey[800],
+                            ),
+                          );
+                        }
                       },
                       buttonName: "Save",
                     ),

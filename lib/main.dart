@@ -1,10 +1,10 @@
 import 'package:bekkams_lending/corecomponents/getit.dart';
 import 'package:bekkams_lending/features/auth/presentation/pages/imagespage.dart';
+//import 'package:bekkams_lending/features/auth/presentation/pages/imagespage.dart';
 import 'package:bekkams_lending/features/auth/presentation/pages/loginpage.dart';
-//import 'package:bekkams_lending/features/auth/presentation/pages/loginpage.dart';
+import 'package:bekkams_lending/features/auth/presentation/pages/signuppage.dart';
 import 'package:bekkams_lending/features/auth/presentation/provider/authprovider.dart';
 import 'package:bekkams_lending/features/auth/presentation/provider/imageprovider.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Lending application',
-          home: ImageUploadScreen(),
+          home: AuthSignUpPage(),
         ),
       ),
     );

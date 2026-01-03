@@ -1,3 +1,4 @@
+import 'package:bekkams_lending/features/auth/data/domain/entities/userdata.dart';
 import 'package:bekkams_lending/features/auth/data/domain/models/userdatamodel.dart';
 import 'package:bekkams_lending/features/auth/data/firebaserepository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +22,9 @@ class Authenticationprovider extends ChangeNotifier {
   final phoneNumber = TextEditingController();
   final confirmPasword = TextEditingController();
 
+  Userdata? _userProfile;
+  Userdata? get userProfile => _userProfile;
+
   //Error values
   String? _emailError;
   String? _passwordError;
@@ -32,7 +36,7 @@ class Authenticationprovider extends ChangeNotifier {
   // state and obscure values
   bool _obscureText = true;
   bool _obscurePasswordText = true;
-  bool _obscureTextlogin = true;
+  //bool _obscureTextlogin = true;
   bool _loading = false;
   bool _errorState = false;
 
@@ -40,7 +44,7 @@ class Authenticationprovider extends ChangeNotifier {
   String? get emaillError => _emailError;
   String? get passwordError => _passwordError;
   bool? get obscureText => _obscureText;
-  bool? get obscureTextlogin => _obscureTextlogin;
+  // bool? get obscureTextlogin => _obscureTextlogin;
   bool? get obscurePasswordText => _obscurePasswordText;
   User? get userData => _user;
   bool? get loadingstate => _loading;
@@ -79,7 +83,7 @@ class Authenticationprovider extends ChangeNotifier {
       );
       if (authuser != null) {
         final result = await firebaserepository.saveUserdata(
-          Userdatamodel(
+          Userdata(
             uId: _user!.uid.trim(),
             firstName: firstName.text.trim(),
             lastName: lastName.text.trim(),
@@ -92,6 +96,7 @@ class Authenticationprovider extends ChangeNotifier {
         final data = result.fold((value) => value, (failure) => null);
         if (data != null) {
           _loading = false;
+          clearAuthFields();
           notifyListeners();
           return authuser;
         } else {
@@ -105,6 +110,45 @@ class Authenticationprovider extends ChangeNotifier {
     }
     notifyListeners();
     return null;
+  }
+
+  Future<User?> signInWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
+    _loading = true;
+    notifyListeners();
+    _emailError = validateEmail(email);
+    _passwordError = validatePassword(password);
+    if (_emailError == null && _passwordError == null) {
+      final result = await firebaserepository.signIn(email, password);
+      final session = await result.fold(
+        (user) async {
+          _user = user;
+          await fetchProfileData(_user!.uid);
+          _loading = false;
+          return _user;
+        },
+        (failure) {
+          if (failure.code == "invalid-credential") {
+            _errorState = true;
+            return null;
+          }
+        },
+      );
+      notifyListeners();
+      return session;
+    }
+    notifyListeners();
+    return null;
+  }
+
+  fetchProfileData(String uid) async {
+    final userData = await firebaserepository.fetchUserData(uid);
+    userData.fold((data) {
+      _userProfile = data;
+      notifyListeners();
+    }, (failure) => _errorState = true);
   }
 
   //used to clear error message of email and password.
@@ -189,18 +233,17 @@ class Authenticationprovider extends ChangeNotifier {
     } else {
       _obscureText = true;
     }
-
     notifyListeners();
   }
 
-  void showLoginPassword() {
-    if (_obscureTextlogin == true) {
-      _obscureTextlogin = false;
-    } else {
-      _obscureTextlogin = true;
-    }
-    notifyListeners();
-  }
+  // void showLoginPassword() {
+  //   if (_obscureTextlogin == true) {
+  //     _obscureTextlogin = false;
+  //   } else {
+  //     _obscureTextlogin = true;
+  //   }
+  //   notifyListeners();
+  // }
 
   void showConfirmPassword() {
     if (_obscurePasswordText == true) {
@@ -219,5 +262,13 @@ class Authenticationprovider extends ChangeNotifier {
       _confirmPasswordError = null;
     }
     notifyListeners();
+  }
+
+  void clearAuthFields() {
+    email.clear();
+    password.clear();
+    firstName.clear();
+    lastName.clear();
+    confirmPasword.clear();
   }
 }

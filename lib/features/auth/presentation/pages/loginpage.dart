@@ -1,3 +1,4 @@
+import 'package:bekkams_lending/features/auth/presentation/pages/homepage.dart';
 import 'package:bekkams_lending/features/auth/presentation/pages/signuppage.dart';
 import 'package:bekkams_lending/features/auth/presentation/provider/authprovider.dart';
 import 'package:bekkams_lending/features/auth/presentation/widgets/filledbutton.dart';
@@ -14,85 +15,140 @@ class AuthLoginPage extends StatefulWidget {
 }
 
 class _AuthLoginPageState extends State<AuthLoginPage> {
+  final email = TextEditingController();
+  final password = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    email.clear();
+    password.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<Authenticationprovider>(
       builder: (BuildContext context, authenticationprovider, child) {
-        return Scaffold(
-          backgroundColor: Colors.black,
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Login Screen",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 35,
-                      fontWeight: FontWeight.bold,
-                    ),
+        return authenticationprovider.loadingstate == true
+            ? Center(child: CircularProgressIndicator(color: Colors.white))
+            : Scaffold(
+              backgroundColor: Colors.black,
+              body: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 30,
                   ),
-                  SizedBox(height: 20),
-                  MyTextField(
-                    errortext: null,
-                    hintText: 'Enter User name',
-                    textEditingController: TextEditingController(),
-                  ),
-                  SizedBox(height: 20),
-                  MyTextField(
-                    errortext: null,
-                    hintText: 'Password',
-                    textEditingController: TextEditingController(),
-                    obscureText: authenticationprovider.obscureTextlogin,
-                    ontap: () {
-                      authenticationprovider.clearPasswordError();
-                    },
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        authenticationprovider.showLoginPassword();
-                      },
-                      icon:
-                          authenticationprovider.obscureText == true
-                              ? Icon(Icons.remove_red_eye)
-                              : Icon(Icons.remove_red_eye_outlined),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  CustomFilledButton(onPressed: () {}, buttonName: "Login"),
-                  SizedBox(height: 20),
-                  Row(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Don't have a account Please",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      SizedBox(width: 10),
-                      MyTextButton(
-                        text: Text(
-                          "Click here",
-                          style: TextStyle(color: Colors.blue),
+                        "Login Screen",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 35,
+                          fontWeight: FontWeight.bold,
                         ),
+                      ),
+                      SizedBox(height: 20),
+                      MyTextField(
+                        obscureText: false,
+                        errortext: authenticationprovider.emaillError,
+                        hintText: 'Enter Email',
+                        textEditingController: email,
                         ontap: () {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder: (_, __, ___) => AuthSignUpPage(),
-                              transitionDuration: Duration.zero,
-                              reverseTransitionDuration: Duration.zero,
-                            ),
-                          );
+                          authenticationprovider.clearEmailError();
                         },
+                      ),
+                      SizedBox(height: 20),
+                      MyTextField(
+                        obscureText: authenticationprovider.obscureText,
+                        errortext: authenticationprovider.passwordError,
+                        hintText: 'Enter Password',
+                        textEditingController: password,
+                        ontap: () {
+                          authenticationprovider.clearPasswordError();
+                        },
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            authenticationprovider.showPassword();
+                          },
+                          icon:
+                              authenticationprovider.obscureText == true
+                                  ? Icon(Icons.remove_red_eye)
+                                  : Icon(Icons.remove_red_eye_outlined),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      CustomFilledButton(
+                        onPressed: () async {
+                          final user = await authenticationprovider
+                              .signInWithEmailAndPassword(
+                                email.text.trim(),
+                                password.text.trim(),
+                              );
+
+                          if (!mounted) return;
+                          if (user == null &&
+                              authenticationprovider.errorstate == true) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              snackBarAnimationStyle: AnimationStyle(
+                                duration: Duration(seconds: 2),
+                              ),
+                              SnackBar(
+                                content: Text(
+                                  "Invalid email or password Please try Again",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: Colors.grey[800],
+                              ),
+                            );
+                          }
+                          if (user != null) {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder: (_, __, ___) => MyHomePage(),
+                                transitionDuration: Duration.zero,
+                                reverseTransitionDuration: Duration.zero,
+                              ),
+                            );
+                          }
+                        },
+                        buttonName: "Login",
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Don't have a account Please",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          SizedBox(width: 10),
+                          MyTextButton(
+                            text: Text(
+                              "Click here",
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                            ontap: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (_, __, ___) => AuthSignUpPage(),
+                                  transitionDuration: Duration.zero,
+                                  reverseTransitionDuration: Duration.zero,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        );
+            );
       },
     );
   }

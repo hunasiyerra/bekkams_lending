@@ -31,6 +31,20 @@ class Userdatamodel extends Userdata {
     );
   }
 
+  factory Userdatamodel.fromEntity(Userdata entity) {
+    return Userdatamodel(
+      uId: entity.uId,
+      firstName: entity.firstName,
+      lastName: entity.lastName,
+      email: entity.email,
+      phoneNumber: entity.phoneNumber,
+      role: entity.role,
+      userimagedata: entity.userimagedata,
+      createdAt: entity.createdAt,
+      updatedAt: DateTime.now(),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'uId': uId,

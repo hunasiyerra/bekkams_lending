@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bekkams_lending/features/auth/data/domain/entities/userdata.dart';
 import 'package:bekkams_lending/features/auth/data/domain/entities/userimagedata.dart';
 import 'package:bekkams_lending/features/auth/data/domain/models/userdatamodel.dart';
 import 'package:bekkams_lending/features/auth/data/domain/models/userimagemodel.dart';
@@ -32,13 +33,13 @@ class Firebaserepositoryimpl extends Firebaserepository {
 
   @override
   Future<Either<String, FirebaseException>> saveUserdata(
-    Userdatamodel userdatamodel,
+    Userdata userdata,
   ) async {
     try {
       await _firebaseFirestore
           .collection("Users")
-          .doc(userdatamodel.uId)
-          .set(userdatamodel.toJson());
+          .doc(userdata.uId)
+          .set(Userdatamodel.fromEntity(userdata).toJson());
       return left("Data Saved Successfully");
     } on FirebaseException catch (e) {
       return right(e);
@@ -83,5 +84,43 @@ class Firebaserepositoryimpl extends Firebaserepository {
     } on FirebaseException catch (e) {
       return right(e);
     }
+  }
+
+  @override
+  Future<Either<User?, FirebaseException>> signIn(
+    String email,
+    String password,
+  ) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return left(userCredential.user);
+    } on FirebaseException catch (e) {
+      return right(e);
+    }
+  }
+
+  @override
+  Future<Either<Userdata?, FirebaseException>> fetchUserData(
+    String userId,
+  ) async {
+    try {
+      final result =
+          await _firebaseFirestore.collection("Users").doc(userId).get();
+      if (!result.exists) {
+        return left(null);
+      } else {
+        return left(Userdatamodel.fromJson(result.data()!));
+      }
+    } on FirebaseException catch (e) {
+      return right(e);
+    }
+  }
+
+  @override
+  Future logout() async {
+    await _auth.signOut();
   }
 }

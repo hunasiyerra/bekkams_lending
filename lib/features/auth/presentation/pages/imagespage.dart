@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:bekkams_lending/corecomponents/enums/imageenums.dart';
 import 'package:bekkams_lending/features/auth/presentation/pages/homepage.dart';
+import 'package:bekkams_lending/features/auth/presentation/provider/authprovider.dart';
 import 'package:bekkams_lending/features/auth/presentation/provider/imageprovider.dart';
 import 'package:bekkams_lending/features/auth/presentation/widgets/errortext.dart';
 import 'package:bekkams_lending/features/auth/presentation/widgets/filledbutton.dart';
@@ -135,6 +138,9 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                           widget.uId,
                         );
                         if (result != null && result.isNotEmpty) {
+                          context
+                              .read<Authenticationprovider>()
+                              .fetchProfileData(widget.uId);
                           Navigator.push(
                             context,
                             PageRouteBuilder(

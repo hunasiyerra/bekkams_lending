@@ -230,9 +230,6 @@ class CustomImageProvider extends ChangeNotifier {
   }
 
   Future<String?> saveImageData(String uId) async {
-    print(
-      "Profile url: $_profileUrl, AadharUrl: $_aadharUrl, panurl: $_panUrl",
-    );
     if (_profileUrl != null &&
         _profileUrl!.isNotEmpty &&
         _aadharUrl != null &&
@@ -243,7 +240,8 @@ class CustomImageProvider extends ChangeNotifier {
         _panNumber!.isNotEmpty &&
         _aadharNumber != null &&
         _aadharNumber!.isNotEmpty &&
-        _imageError == null) {
+        _imageError != null &&
+        _imageError!.isNotEmpty) {
       final data = await firebaserepository.uploadImagedata(uId, [
         Userimagemodel(
           pan: _panNumber!,

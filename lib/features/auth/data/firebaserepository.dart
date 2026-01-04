@@ -27,7 +27,9 @@ abstract class Firebaserepository {
     List<Userimagemodel> userimagedata,
   );
 
-  Future logout();
-
   Future<Either<Userdata?, FirebaseException>> fetchUserData(String userId);
+
+  Stream<User?> checkAuthState();
+
+  Future<void> signOut();
 }

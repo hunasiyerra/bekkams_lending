@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:bekkams_lending/features/auth/data/domain/entities/userdata.dart';
-import 'package:bekkams_lending/features/auth/data/domain/models/userdatamodel.dart';
 import 'package:bekkams_lending/features/auth/data/firebaserepository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
@@ -7,12 +7,16 @@ import 'package:flutter/widgets.dart';
 class Authenticationprovider extends ChangeNotifier {
   final Firebaserepository firebaserepository;
 
-  Authenticationprovider({required this.firebaserepository});
+  Authenticationprovider({required this.firebaserepository}) {
+    checkAppState();
+  }
 
   final RegExp _pattern = RegExp(r"^[\w-\.]+@gmail.com");
   final RegExp _passwordRegex = RegExp(
     r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).+$',
   );
+
+  StreamSubscription<User?>? _authSub;
 
   User? _user;
   final email = TextEditingController();
@@ -143,10 +147,11 @@ class Authenticationprovider extends ChangeNotifier {
     return null;
   }
 
-  fetchProfileData(String uid) async {
+  Future<void> fetchProfileData(String uid) async {
     final userData = await firebaserepository.fetchUserData(uid);
     userData.fold((data) {
       _userProfile = data;
+      print(_userProfile);
       notifyListeners();
     }, (failure) => _errorState = true);
   }
@@ -264,11 +269,31 @@ class Authenticationprovider extends ChangeNotifier {
     notifyListeners();
   }
 
+  checkAppState() {
+    _authSub = firebaserepository.checkAuthState().listen((user) async {
+      _user = user;
+      if (user != null) {
+        await fetchProfileData(user.uid);
+      }
+      notifyListeners();
+    });
+  }
+
+  Future appSignOut() async {
+    await firebaserepository.signOut();
+  }
+
   void clearAuthFields() {
     email.clear();
     password.clear();
     firstName.clear();
     lastName.clear();
     confirmPasword.clear();
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
   }
 }

@@ -120,7 +120,12 @@ class Firebaserepositoryimpl extends Firebaserepository {
   }
 
   @override
-  Future logout() async {
+  Stream<User?> checkAuthState() {
+    return _auth.authStateChanges();
+  }
+
+  @override
+  Future<void> signOut() async {
     await _auth.signOut();
   }
 }

@@ -89,7 +89,7 @@ class CustomImageProvider extends ChangeNotifier {
     notifyListeners();
     List<TextBlock>? data;
     for (var text in textBlocks) {
-      if (text.text == "GOVERNMENT OF INDIA") {
+      if (text.text.toUpperCase() == "GOVERNMENT OF INDIA") {
         data = textBlocks;
         break;
       } else {
@@ -97,9 +97,12 @@ class CustomImageProvider extends ChangeNotifier {
       }
     }
     if (data != null && data.isNotEmpty) {
-      for (var test in data) {
-        if (aadhaarRegex.hasMatch(test.text) && test.text.trim().length == 14) {
-          return test.text;
+      for (var block in data) {
+        for (var line in block.lines) {
+          if (aadhaarRegex.hasMatch(line.text.trim()) &&
+              line.text.trim().length == 14) {
+            return line.text;
+          }
         }
       }
     } else {
@@ -194,7 +197,7 @@ class CustomImageProvider extends ChangeNotifier {
     final XFile? file = await _imagePicker.pickImage(source: source);
     if (file != null) {
       int size = await file.length();
-      if (size < 5000000) {
+      if (size < 10000000) {
         InputImage image = InputImage.fromFilePath(file.path);
         return image;
       } else {

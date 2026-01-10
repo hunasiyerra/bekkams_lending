@@ -1,12 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:bekkams_lending/corecomponents/enums/imageenums.dart';
-import 'package:bekkams_lending/features/auth/presentation/pages/homepage.dart';
-import 'package:bekkams_lending/features/auth/presentation/provider/authprovider.dart';
-import 'package:bekkams_lending/features/auth/presentation/provider/imageprovider.dart';
-import 'package:bekkams_lending/features/auth/presentation/widgets/errortext.dart';
-import 'package:bekkams_lending/features/auth/presentation/widgets/filledbutton.dart';
-import 'package:bekkams_lending/features/auth/presentation/widgets/uploadbutton.dart';
+import 'package:bekkams_lending/features/auth/presentation/home/pages/homepages.dart';
+import 'package:bekkams_lending/features/auth/presentation/home/provider/homeprovider.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/provider/imageprovider.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/widget/errortext.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/widget/filledbutton.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/widget/uploadbutton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -138,9 +138,9 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                           widget.uId,
                         );
                         if (result != null && result.isNotEmpty) {
-                          context
-                              .read<Authenticationprovider>()
-                              .fetchProfileData(widget.uId);
+                          context.read<HomeProfileprovider>().fetchProfileData(
+                            widget.uId,
+                          );
                           Navigator.push(
                             context,
                             PageRouteBuilder(

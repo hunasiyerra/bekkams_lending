@@ -1,9 +1,10 @@
 import 'package:bekkams_lending/corecomponents/getit.dart';
-import 'package:bekkams_lending/features/auth/presentation/pages/appstatepage.dart';
+import 'package:bekkams_lending/features/auth/presentation/home/pages/appstatepage.dart';
 //import 'package:bekkams_lending/features/auth/presentation/pages/imagespage.dart';
-import 'package:bekkams_lending/features/auth/presentation/pages/loginpage.dart';
-import 'package:bekkams_lending/features/auth/presentation/provider/authprovider.dart';
-import 'package:bekkams_lending/features/auth/presentation/provider/imageprovider.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/pages/loginpage.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/provider/authprovider.dart';
+import 'package:bekkams_lending/features/auth/presentation/home/provider/homeprovider.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/provider/imageprovider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,6 +36,20 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider<CustomImageProvider>(
             create: (context) => sl(),
+          ),
+          ChangeNotifierProxyProvider<
+            Authenticationprovider,
+            HomeProfileprovider
+          >(
+            create: (_) => sl<HomeProfileprovider>(),
+            update: (_, auth, home) {
+              if (auth.userData != null) {
+                home!.fetchProfileData(auth.userData!.uid);
+              } else {
+                home!.clear();
+              }
+              return home;
+            },
           ),
         ],
         child: MaterialApp(

@@ -1,9 +1,9 @@
-import 'package:bekkams_lending/features/auth/presentation/pages/homepage.dart';
-import 'package:bekkams_lending/features/auth/presentation/pages/signuppage.dart';
-import 'package:bekkams_lending/features/auth/presentation/provider/authprovider.dart';
-import 'package:bekkams_lending/features/auth/presentation/widgets/filledbutton.dart';
-import 'package:bekkams_lending/features/auth/presentation/widgets/textbutton.dart';
-import 'package:bekkams_lending/features/auth/presentation/widgets/textfield.dart';
+import 'package:bekkams_lending/features/auth/presentation/home/pages/homepages.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/pages/signuppage.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/provider/authprovider.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/widget/filledbutton.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/widget/textbutton.dart';
+import 'package:bekkams_lending/features/auth/presentation/auth/widget/textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

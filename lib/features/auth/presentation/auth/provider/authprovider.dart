@@ -26,9 +26,6 @@ class Authenticationprovider extends ChangeNotifier {
   final phoneNumber = TextEditingController();
   final confirmPasword = TextEditingController();
 
-  Userdata? _userProfile;
-  Userdata? get userProfile => _userProfile;
-
   //Error values
   String? _emailError;
   String? _passwordError;
@@ -43,6 +40,7 @@ class Authenticationprovider extends ChangeNotifier {
   //bool _obscureTextlogin = true;
   bool _loading = false;
   bool _errorState = false;
+  bool _authChecked = false;
 
   // getter values
   String? get emaillError => _emailError;
@@ -57,6 +55,7 @@ class Authenticationprovider extends ChangeNotifier {
   String? get lastNameError => _lastNameError;
   String? get phoneNumberErrow => _phoneNumberError;
   bool? get errorstate => _errorState;
+  bool get authChecked => _authChecked;
 
   Future<User?> signUpWithEmailAndPassword() async {
     String emailPassed = email.text.trim();
@@ -129,7 +128,7 @@ class Authenticationprovider extends ChangeNotifier {
       final session = await result.fold(
         (user) async {
           _user = user;
-          await fetchProfileData(_user!.uid);
+          //  await fetchProfileData(_user!.uid);
           _loading = false;
           return _user;
         },
@@ -145,15 +144,6 @@ class Authenticationprovider extends ChangeNotifier {
     }
     notifyListeners();
     return null;
-  }
-
-  Future<void> fetchProfileData(String uid) async {
-    final userData = await firebaserepository.fetchUserData(uid);
-    userData.fold((data) {
-      _userProfile = data;
-      print(_userProfile);
-      notifyListeners();
-    }, (failure) => _errorState = true);
   }
 
   //used to clear error message of email and password.
@@ -272,15 +262,12 @@ class Authenticationprovider extends ChangeNotifier {
   checkAppState() {
     _authSub = firebaserepository.checkAuthState().listen((user) async {
       _user = user;
-      if (user != null) {
-        await fetchProfileData(user.uid);
-      }
+      // if (user != null) {
+      //   await fetchProfileData(user.uid);
+      // }
+      _authChecked = true;
       notifyListeners();
     });
-  }
-
-  Future appSignOut() async {
-    await firebaserepository.signOut();
   }
 
   void clearAuthFields() {

@@ -1,9 +1,9 @@
 import 'package:bekkams_lending/features/data/auth/domain/entities/userdata.dart';
 import 'package:bekkams_lending/features/data/auth/firebaserepository.dart';
+import 'package:bekkams_lending/features/presentation/home/pages/Dashboardpage.dart';
 import 'package:bekkams_lending/features/presentation/home/pages/customerspage.dart';
 import 'package:bekkams_lending/features/presentation/home/pages/loanpage.dart';
-import 'package:bekkams_lending/features/presentation/pages/Dashboardpage.dart';
-import 'package:bekkams_lending/features/presentation/pages/myprofilepage.dart';
+import 'package:bekkams_lending/features/presentation/home/pages/myprofilepage.dart';
 import 'package:flutter/material.dart';
 
 class HomeProfileprovider extends ChangeNotifier {

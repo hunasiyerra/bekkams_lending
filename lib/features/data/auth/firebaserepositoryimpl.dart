@@ -5,16 +5,24 @@ import 'package:bekkams_lending/features/data/auth/domain/entities/userimagedata
 import 'package:bekkams_lending/features/data/auth/domain/models/userdatamodel.dart';
 import 'package:bekkams_lending/features/data/auth/domain/models/userimagemodel.dart';
 import 'package:bekkams_lending/features/data/auth/firebaserepository.dart';
+import 'package:bekkams_lending/features/data/firebaseinstance.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fpdart/fpdart.dart';
 
 class Firebaserepositoryimpl extends Firebaserepository {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
+  final FirebaseStorage _storage;
 
+  Firebaserepositoryimpl({
+    FirebaseAuth? auth,
+    FirebaseFirestore? firestore,
+    FirebaseStorage? storage,
+  }) : _auth = auth ?? Firebaseinstance.auth,
+       _firestore = firestore ?? Firebaseinstance.firestore,
+       _storage = storage ?? Firebaseinstance.storage;
   @override
   Future<Either<User?, FirebaseException>> signUp(
     String email,
@@ -36,7 +44,7 @@ class Firebaserepositoryimpl extends Firebaserepository {
     Userdata userdata,
   ) async {
     try {
-      await _firebaseFirestore
+      await _firestore
           .collection("Users")
           .doc(userdata.uId)
           .set(Userdatamodel.fromEntity(userdata).toJson());
@@ -77,7 +85,7 @@ class Firebaserepositoryimpl extends Firebaserepository {
     List<Userimagedata> userimagedata,
   ) async {
     try {
-      await _firebaseFirestore.collection("Users").doc(uid).update({
+      await _firestore.collection("Users").doc(uid).update({
         'images': userimagedata.map((e) => (e as Userimagemodel).toJson()),
       });
       return left("Data Saved Successfully");
@@ -107,8 +115,7 @@ class Firebaserepositoryimpl extends Firebaserepository {
     String userId,
   ) async {
     try {
-      final result =
-          await _firebaseFirestore.collection("Users").doc(userId).get();
+      final result = await _firestore.collection("Users").doc(userId).get();
       if (!result.exists) {
         return left(null);
       } else {

@@ -1,10 +1,8 @@
 import 'package:bekkams_lending/corecomponents/getit.dart';
-import 'package:bekkams_lending/features/auth/presentation/home/pages/appstatepage.dart';
-//import 'package:bekkams_lending/features/auth/presentation/pages/imagespage.dart';
-import 'package:bekkams_lending/features/auth/presentation/auth/pages/loginpage.dart';
-import 'package:bekkams_lending/features/auth/presentation/auth/provider/authprovider.dart';
-import 'package:bekkams_lending/features/auth/presentation/home/provider/homeprovider.dart';
-import 'package:bekkams_lending/features/auth/presentation/auth/provider/imageprovider.dart';
+import 'package:bekkams_lending/features/presentation/home/pages/appstatepage.dart';
+import 'package:bekkams_lending/features/presentation/auth/provider/authprovider.dart';
+import 'package:bekkams_lending/features/presentation/home/provider/homeprovider.dart';
+import 'package:bekkams_lending/features/presentation/auth/provider/imageprovider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

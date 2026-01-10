@@ -1,8 +1,8 @@
-import 'package:bekkams_lending/features/auth/data/firebaserepository.dart';
-import 'package:bekkams_lending/features/auth/data/firebaserepositoryimpl.dart';
-import 'package:bekkams_lending/features/auth/presentation/auth/provider/authprovider.dart';
-import 'package:bekkams_lending/features/auth/presentation/home/provider/homeprovider.dart';
-import 'package:bekkams_lending/features/auth/presentation/auth/provider/imageprovider.dart';
+import 'package:bekkams_lending/features/data/auth/firebaserepository.dart';
+import 'package:bekkams_lending/features/data/auth/firebaserepositoryimpl.dart';
+import 'package:bekkams_lending/features/presentation/auth/provider/authprovider.dart';
+import 'package:bekkams_lending/features/presentation/home/provider/homeprovider.dart';
+import 'package:bekkams_lending/features/presentation/auth/provider/imageprovider.dart';
 import 'package:get_it/get_it.dart';
 
 final sl = GetIt.instance;

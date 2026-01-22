@@ -32,6 +32,7 @@ class CustomImageProvider extends ChangeNotifier {
   String? _profileUrl;
   String? _panNumber;
   String? _aadharNumber;
+  double _linearNumber = 0.0;
 
   ImageStatus get getimageDisplayed => _displayimage;
   ImagefolderType? get getImageFolder => _imageFolder;
@@ -39,6 +40,7 @@ class CustomImageProvider extends ChangeNotifier {
   String? get getPanNumber => _panNumber;
   String? get getAadharNumber => _aadharNumber;
   String get getProfileUrl => _profileUrl ?? "";
+  double get getLinearNum => _linearNumber;
 
   imageFromGallery(String uId, ImagefolderType type) async {
     _imageFolder = type;
@@ -63,9 +65,11 @@ class CustomImageProvider extends ChangeNotifier {
         if (value != null && _imageFolder == ImagefolderType.pan) {
           _panUrl = value;
           _panNumber = textNum;
+          _linearNumber = _linearNumber + 0.33;
         } else if (value != null && _imageFolder == ImagefolderType.aadhar) {
           _aadharUrl = value;
           _aadharNumber = textNum;
+          _linearNumber = _linearNumber + 0.34;
           _imageError = null;
         } else {
           _imageError = "Unable to upload ${folderFromType(_imageFolder!)}";
@@ -150,6 +154,7 @@ class CustomImageProvider extends ChangeNotifier {
       if (result != null && result.isNotEmpty) {
         _profileUrl = result;
         _displayimage = ImageStatus.success;
+        _linearNumber = _linearNumber + 0.33;
       } else {
         _displayimage = ImageStatus.start;
       }
@@ -233,6 +238,10 @@ class CustomImageProvider extends ChangeNotifier {
   }
 
   Future<String?> saveImageData(String uId) async {
+    _imageFolder = ImagefolderType.loading;
+    _imageError = null;
+    notifyListeners();
+
     if (_profileUrl != null &&
         _profileUrl!.isNotEmpty &&
         _aadharUrl != null &&
@@ -242,9 +251,7 @@ class CustomImageProvider extends ChangeNotifier {
         _panNumber != null &&
         _panNumber!.isNotEmpty &&
         _aadharNumber != null &&
-        _aadharNumber!.isNotEmpty &&
-        _imageError != null &&
-        _imageError!.isNotEmpty) {
+        _aadharNumber!.isNotEmpty) {
       final data = await firebaserepository.uploadImagedata(uId, [
         Userimagemodel(
           pan: _panNumber!,
@@ -277,6 +284,8 @@ class CustomImageProvider extends ChangeNotifier {
         return "Profile";
       case ImagefolderType.none:
         return "NotUpload";
+      case ImagefolderType.loading:
+        return "Loading";
     }
   }
 

@@ -1,12 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:bekkams_lending/corecomponents/enums/imageenums.dart';
+import 'package:bekkams_lending/features/presentation/auth/widget/documenttile.dart';
+import 'package:bekkams_lending/features/presentation/auth/widget/errortext.dart';
+import 'package:bekkams_lending/features/presentation/auth/widget/glasscard.dart';
 import 'package:bekkams_lending/features/presentation/home/pages/homepages.dart';
 import 'package:bekkams_lending/features/presentation/home/provider/homeprovider.dart';
 import 'package:bekkams_lending/features/presentation/auth/provider/imageprovider.dart';
-import 'package:bekkams_lending/features/presentation/auth/widget/errortext.dart';
-import 'package:bekkams_lending/features/presentation/auth/widget/filledbutton.dart';
-import 'package:bekkams_lending/features/presentation/auth/widget/uploadbutton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,148 +22,226 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<CustomImageProvider>(
-      builder: (context, imageprovide, child) {
+      builder: (context, imageProvider, _) {
         return Scaffold(
-          backgroundColor: Colors.black,
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 50),
-              child: Center(
+          body: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF0F2027),
+                  Color(0xFF203A43),
+                  Color(0xFF2C5364),
+                ],
+              ),
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 95,
-                          backgroundImage:
-                              imageprovide.getProfileUrl.isNotEmpty &&
-                                      imageprovide.getimageDisplayed ==
-                                          ImageStatus.success
-                                  ? NetworkImage(imageprovide.getProfileUrl)
-                                  : AssetImage(
-                                    'assets/images/placeholderimage.png',
-                                  ),
-                          child:
-                              imageprovide.getProfileUrl.isEmpty &&
-                                      imageprovide.getimageDisplayed ==
-                                          ImageStatus.loading
-                                  ? CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )
-                                  : null,
-                        ),
-                        Positioned(
-                          bottom: 25,
-                          right: 15,
-                          child: CircleAvatar(
-                            backgroundColor: Colors.grey,
-                            radius: 15,
-                            child: IconButton(
-                              onPressed: () {
-                                imageprovide.uploadImageFromCamera(widget.uId);
-                              },
-                              icon: Icon(
-                                Icons.camera_alt,
-                                size: 18,
-                                color: Colors.white,
+                    /// HEADER
+                    const Text(
+                      "Verify Identity",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      "Upload your documents to complete verification",
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    const SizedBox(height: 16),
+
+                    /// PROGRESS
+                    LinearProgressIndicator(
+                      value: imageProvider.getLinearNum,
+                      backgroundColor: Colors.white24,
+                      color: Colors.greenAccent,
+                    ),
+                    const SizedBox(height: 30),
+
+                    /// PROFILE PHOTO CARD
+                    MyGlassCard(
+                      child: Column(
+                        children: [
+                          const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Profile Photo",
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 20),
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              CircleAvatar(
+                                radius: 60,
+                                backgroundColor: Colors.black26,
+                                backgroundImage:
+                                    imageProvider.getProfileUrl.isNotEmpty &&
+                                            imageProvider.getimageDisplayed ==
+                                                ImageStatus.success
+                                        ? NetworkImage(
+                                          imageProvider.getProfileUrl,
+                                        )
+                                        : const AssetImage(
+                                              'assets/images/placeholderimage.png',
+                                            )
+                                            as ImageProvider,
+                                child:
+                                    imageProvider.getProfileUrl.isEmpty &&
+                                            imageProvider.getimageDisplayed ==
+                                                ImageStatus.loading
+                                        ? CircularProgressIndicator(
+                                          color: Colors.white,
+                                        )
+                                        : null,
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    imageProvider.uploadImageFromCamera(
+                                      widget.uId,
+                                    );
+                                  },
+                                  child: const CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor: Colors.greenAccent,
+                                    child: Icon(
+                                      Icons.camera_alt,
+                                      size: 18,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          ErrorText(
+                            color: Colors.red,
+                            error: imageProvider.errorFor(
+                              ImagefolderType.profile,
+                            ),
+                          ),
+                          // const Text(
+                          //   "Take a clear photo of your face",
+                          //   style: TextStyle(color: Colors.white60),
+                          // ),
+                        ],
+                      ),
                     ),
-                    ErrorText(
-                      color: Colors.red,
-                      error: imageprovide.errorFor(ImagefolderType.profile),
-                    ),
-                    SizedBox(height: 30),
-                    FileUploadButton(
-                      buttonName: "Aadhar :",
-                      onPressed: () async {
-                        await imageprovide.imageFromGallery(
+
+                    const SizedBox(height: 20),
+
+                    /// AADHAR CARD
+                    MyDocumentTile(
+                      title: "Aadhaar Card",
+                      subtitle: "Government issued ID",
+                      value:
+                          imageProvider.getAadharNumber ??
+                          imageProvider.errorFor(ImagefolderType.aadhar),
+                      onTap: () async {
+                        await imageProvider.imageFromGallery(
                           widget.uId,
                           ImagefolderType.aadhar,
                         );
                       },
                     ),
-                    ErrorText(
-                      color:
-                          imageprovide.getAadharNumber != null
-                              ? Colors.green
-                              : Colors.red,
-                      fontSize:
-                          imageprovide.getAadharNumber != null ? 18 : null,
-                      fontWeight:
-                          imageprovide.getAadharNumber != null
-                              ? FontWeight.bold
-                              : null,
-                      error:
-                          imageprovide.getAadharNumber ??
-                          imageprovide.errorFor(ImagefolderType.aadhar),
-                    ),
-                    SizedBox(height: 30),
-                    FileUploadButton(
-                      buttonName: "Pan :",
-                      onPressed: () async {
-                        await imageprovide.imageFromGallery(
+
+                    const SizedBox(height: 16),
+
+                    /// PAN CARD
+                    MyDocumentTile(
+                      title: "PAN Card",
+                      subtitle: "Permanent Account Number",
+                      value:
+                          imageProvider.getPanNumber ??
+                          imageProvider.errorFor(ImagefolderType.pan),
+                      onTap: () async {
+                        await imageProvider.imageFromGallery(
                           widget.uId,
                           ImagefolderType.pan,
                         );
                       },
                     ),
-                    ErrorText(
-                      color:
-                          imageprovide.getPanNumber != null
-                              ? Colors.green
-                              : Colors.red,
-                      fontSize: imageprovide.getPanNumber != null ? 18 : null,
-                      fontWeight:
-                          imageprovide.getPanNumber != null
-                              ? FontWeight.bold
-                              : null,
-                      error:
-                          imageprovide.getPanNumber ??
-                          imageprovide.errorFor(ImagefolderType.pan),
+
+                    const Spacer(),
+
+                    /// INFO
+                    Row(
+                      children: const [
+                        Icon(Icons.lock, color: Colors.white54, size: 18),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            "Your data is secure. Documents are encrypted and never shared.",
+                            style: TextStyle(color: Colors.white54),
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 50),
-                    ErrorText(
-                      color: Colors.red,
-                      error: imageprovide.errorFor(ImagefolderType.none),
-                    ),
-                    SizedBox(height: 70),
-                    CustomFilledButton(
-                      onPressed: () async {
-                        final result = await imageprovide.saveImageData(
-                          widget.uId,
-                        );
-                        if (result != null && result.isNotEmpty) {
-                          context.read<HomeProfileprovider>().fetchProfileData(
+
+                    const SizedBox(height: 16),
+
+                    /// CONTINUE BUTTON
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.greenAccent,
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: () async {
+                          final result = await imageProvider.saveImageData(
                             widget.uId,
                           );
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder: (_, __, ___) => MyHomePage(),
-                              transitionDuration: Duration.zero,
-                              reverseTransitionDuration: Duration.zero,
-                            ),
-                          );
-                        }
-                        if (imageprovide.getImageFolder ==
-                            ImagefolderType.none) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                "Unable to Save please try after sometime",
-                                style: TextStyle(color: Colors.white),
+
+                          if (result != null && result.isNotEmpty) {
+                            context
+                                .read<HomeProfileprovider>()
+                                .fetchProfileData(widget.uId);
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const MyHomePage(),
                               ),
-                              backgroundColor: Colors.grey[800],
-                            ),
-                          );
-                        }
-                      },
-                      buttonName: "Save",
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Unable to save. Please try again.",
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text(
+                          "Continue",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

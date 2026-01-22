@@ -1,4 +1,4 @@
-enum ImagefolderType { none, profile, pan, aadhar }
+enum ImagefolderType { none, profile, pan, aadhar, loading }
 
 enum ImageAnalysisType { text, face }
 

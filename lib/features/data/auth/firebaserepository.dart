@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:bekkams_lending/features/data/auth/domain/entities/userdata.dart';
 import 'package:bekkams_lending/features/data/auth/domain/models/userimagemodel.dart';
@@ -28,6 +29,8 @@ abstract class Firebaserepository {
   );
 
   Future<Either<Userdata?, FirebaseException>> fetchUserData(String userId);
+
+  //Future<<Either<Void, >>
 
   Stream<User?> checkAuthState();
 

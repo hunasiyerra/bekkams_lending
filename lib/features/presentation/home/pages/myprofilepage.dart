@@ -13,7 +13,11 @@ class Myprofilepage extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Profile'),
-            leading: const BackButton(),
+            leading: BackButton(
+              onPressed: () async {
+                await profileProvider.appSignOut();
+              },
+            ),
             actions: const [
               Padding(
                 padding: EdgeInsets.only(right: 16),
